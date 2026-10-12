@@ -1,0 +1,902 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AI奇遇记</title>
+<meta name="description" content="跟着小机器人比特，用小故事和动画讲解读懂人工智能：机器学习、神经网络、大语言模型、AI 幻觉，以及 token、向量、注意力机制、上下文窗口这些常见名词。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&family=ZCOOL+KuaiLe&display=swap">
+<style>
+:root {
+  /* 版式：一本画在天空和草地上的图画书。首页 = 带角色的天空主视觉 + 一条连起 4 个故事站点的小路；
+     阅读页 = 一页页故事：左边故事文字，右边“小电视”放动画讲解，下面贴一张知识便签。 */
+  --bg: #DCEFFF;
+  --bg-2: #C2E2FF;
+  --surface: #FFFFFF;
+  --surface-2: #F2F8FF;
+  --text: #1E2746;
+  --text-soft: #4D5878;
+  --line: #1E2746;
+  --shadow: #1E2746;
+  --coral: #FF6F5E;
+  --sun: #FFC83D;
+  --leaf: #2FB57E;
+  --grape: #8A6CFF;
+  --azure: #4FA8F5;
+  --rose: #FF7FA6;
+  --amber: #FFB547;
+  --teal: #22B3A3;
+  --orange: #FF9F43;
+  --indigo: #6C7BFF;
+  --lime: #8CC63F;
+  --magenta: #D35CC0;
+  --lab: #4DD6FF;
+  --grass: #BDEFD0;
+  --grass-2: #94E0B4;
+  --road: #FBEBC8;
+  --cloud: #FFFFFF;
+  --star: rgba(255, 255, 255, 0);
+  --screen: #26335F;
+  --on-accent: #1E2746;
+  --font-display: "ZCOOL KuaiLe", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --font-body: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+  --fs-hero: clamp(3rem, 8vw, 5rem);
+  --fs-h1: clamp(2.2rem, 5vw, 3.2rem);
+  --fs-h2: clamp(1.7rem, 3.4vw, 2.4rem);
+  --fs-h3: clamp(1.3rem, 2.4vw, 1.6rem);
+  --fs-body: 1.0625rem;
+  --fs-small: 0.875rem;
+  --bw: 3px;
+  --sh: 5px;
+  --gutter: clamp(16px, 4vw, 40px);
+  --max: 1160px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121838;
+    --bg-2: #1A2150;
+    --surface: #232C5E;
+    --surface-2: #1C2452;
+    --text: #F2F0FF;
+    --text-soft: #B7BDE2;
+    --line: #070B1E;
+    --shadow: #04071A;
+    --coral: #FF8172;
+    --sun: #FFD15C;
+    --leaf: #4ACD97;
+    --grape: #A58FFF;
+    --azure: #6BB8FF;
+    --rose: #FF93B4;
+    --amber: #FFC266;
+    --teal: #3CCBBB;
+    --orange: #FFB066;
+    --indigo: #8C98FF;
+    --lime: #A3D65C;
+    --magenta: #E07AD0;
+    --lab: #6FE0FF;
+    --grass: #19284D;
+    --grass-2: #142145;
+    --road: #2B376A;
+    --cloud: #2E3A72;
+    --star: rgba(255, 255, 255, 0.85);
+    --screen: #0E1430;
+    --on-accent: #1E2746;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121838;
+  --bg-2: #1A2150;
+  --surface: #232C5E;
+  --surface-2: #1C2452;
+  --text: #F2F0FF;
+  --text-soft: #B7BDE2;
+  --line: #070B1E;
+  --shadow: #04071A;
+  --coral: #FF8172;
+  --sun: #FFD15C;
+  --leaf: #4ACD97;
+  --grape: #A58FFF;
+  --azure: #6BB8FF;
+  --rose: #FF93B4;
+  --amber: #FFC266;
+  --teal: #3CCBBB;
+  --orange: #FFB066;
+  --indigo: #8C98FF;
+  --lime: #A3D65C;
+  --magenta: #E07AD0;
+  --lab: #6FE0FF;
+  --grass: #19284D;
+  --grass-2: #142145;
+  --road: #2B376A;
+  --cloud: #2E3A72;
+  --star: rgba(255, 255, 255, 0.85);
+  --screen: #0E1430;
+  --on-accent: #1E2746;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+}
+img, video { max-width: 100%; display: block; }
+a { color: inherit; }
+h1, h2, h3 { text-wrap: balance; line-height: 1.25; margin: 0; }
+p { margin: 0; }
+:focus-visible { outline: 3px solid var(--grape); outline-offset: 3px; border-radius: 8px; }
+.wrap { max-width: var(--max); margin-inline: auto; padding-inline: var(--gutter); }
+section[id] { scroll-margin-top: 64px; }
+
+/* ---------------------------------------------------------------- 通用部件 */
+.btn {
+  display: inline-flex; align-items: center; gap: 0.5em;
+  padding: 0.62em 1.25em;
+  border: var(--bw) solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  font: 700 1rem/1.2 var(--font-body);
+  text-decoration: none;
+  box-shadow: 0 var(--sh) 0 var(--shadow);
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 calc(var(--sh) + 2px) 0 var(--shadow); }
+.btn:active { transform: translateY(var(--sh)); box-shadow: 0 0 0 var(--shadow); }
+.btn-primary { background: var(--sun); color: var(--on-accent); }
+.chip {
+  display: inline-block;
+  padding: 0.18em 0.8em;
+  border: 2.5px solid var(--line);
+  border-radius: 999px;
+  background: var(--accent, var(--sun));
+  color: var(--on-accent);
+  font-weight: 900;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+}
+.eyebrow {
+  font-weight: 900;
+  font-size: 0.95rem;
+  letter-spacing: 0.12em;
+  color: var(--text-soft);
+}
+
+/* ---------------------------------------------------------------- 顶栏 */
+.topbar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 2px solid color-mix(in srgb, var(--line) 12%, transparent);
+}
+.topbar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 10px; }
+.logo { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; }
+.logo svg { width: 40px; height: 40px; flex: none; }
+.logo span { font-family: var(--font-display); font-size: 1.55rem; line-height: 1; }
+.topnav { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.topnav a {
+  text-decoration: none; font-weight: 700; font-size: 0.95rem;
+  padding: 0.3em 0.85em; border-radius: 999px;
+}
+.topnav a:hover { background: var(--surface); }
+
+/* ---------------------------------------------------------------- 首页主视觉 */
+.hero { position: relative; overflow: hidden; background: linear-gradient(var(--bg), var(--bg-2)); }
+.hero::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    radial-gradient(1.6px 1.6px at 12% 18%, var(--star), transparent 60%),
+    radial-gradient(1.4px 1.4px at 32% 8%, var(--star), transparent 60%),
+    radial-gradient(1.8px 1.8px at 58% 22%, var(--star), transparent 60%),
+    radial-gradient(1.3px 1.3px at 74% 12%, var(--star), transparent 60%),
+    radial-gradient(1.6px 1.6px at 88% 30%, var(--star), transparent 60%),
+    radial-gradient(1.2px 1.2px at 46% 40%, var(--star), transparent 60%),
+    radial-gradient(1.5px 1.5px at 6% 52%, var(--star), transparent 60%);
+}
+.hero .wrap {
+  position: relative;
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  align-items: center; gap: 24px;
+  padding-block: 40px 0;
+}
+.hero-copy { padding-bottom: 72px; min-width: 0; }
+.hero-title {
+  font-family: var(--font-display); font-weight: 400;
+  font-size: var(--fs-hero); line-height: 1.05;
+  margin-top: 10px;
+  color: var(--text);
+  text-shadow: 3px 3px 0 var(--sun);
+}
+.lede { margin-top: 18px; max-width: 30em; font-size: 1.12rem; color: var(--text-soft); }
+.cta { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 26px; }
+.facts { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 22px; font-size: 0.95rem; font-weight: 700; color: var(--text-soft); }
+.facts span::before { content: "●"; color: var(--coral); margin-right: 6px; font-size: 0.7em; vertical-align: 0.15em; }
+.hero-art { position: relative; min-width: 0; align-self: end; }
+.hero-art svg { width: 100%; height: auto; display: block; overflow: visible; }
+.hero-bubble {
+  position: absolute; right: 2%; top: 4%;
+  max-width: 15em;
+  padding: 0.7em 1em;
+  background: var(--surface); color: var(--text);
+  border: var(--bw) solid var(--line); border-radius: 20px;
+  box-shadow: 4px 5px 0 var(--shadow);
+  font-weight: 700; font-size: 0.98rem; line-height: 1.6;
+}
+.hero-bubble::after {
+  content: ""; position: absolute; left: 26%; bottom: -15px;
+  width: 22px; height: 22px; background: var(--surface);
+  border-right: var(--bw) solid var(--line); border-bottom: var(--bw) solid var(--line);
+  transform: rotate(45deg) skew(8deg, 8deg);
+}
+.hills { position: absolute; left: 0; right: 0; bottom: -1px; width: 100%; height: 90px; display: block; }
+.hills .h1 { fill: var(--grass-2); }
+.hills .h2 { fill: var(--grass); }
+
+/* 角色动画 */
+.float { animation: float 3.4s ease-in-out infinite; }
+.wave-arm { transform-box: fill-box; transform-origin: 0% 100%; animation: wave 1.6s ease-in-out infinite; }
+.cloud { animation: drift 26s linear infinite alternate; }
+.cloud.slow { animation-duration: 38s; }
+.blink { transform-box: fill-box; transform-origin: center; animation: blink 4.2s infinite; }
+.glow { animation: glow 2.2s ease-in-out infinite; }
+@keyframes float { 50% { transform: translateY(-10px); } }
+@keyframes wave { 0%, 100% { transform: rotate(-10deg); } 50% { transform: rotate(16deg); } }
+@keyframes drift { from { transform: translateX(-18px); } to { transform: translateX(22px); } }
+@keyframes blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+@keyframes glow { 50% { fill: #FFF3B8; } }
+
+/* ---------------------------------------------------------------- 故事地图 */
+.map { background: var(--grass); padding-block: 36px 64px; }
+.section-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 24px; }
+.section-head h2 { font-family: var(--font-display); font-weight: 400; font-size: var(--fs-h2); }
+.section-head p { color: var(--text-soft); max-width: 32em; }
+.group + .group { margin-top: 40px; }
+.group-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin-top: 30px; }
+.signpost {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 0.3em 1em 0.3em 0.8em;
+  background: var(--surface); color: var(--text);
+  border: var(--bw) solid var(--line); border-radius: 12px 26px 26px 12px;
+  box-shadow: 3px 4px 0 var(--shadow);
+  font-family: var(--font-display); font-size: 1.35rem; line-height: 1.2;
+}
+.signpost::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--coral); border: 2px solid var(--line); }
+.group-head p { color: var(--text-soft); font-weight: 700; }
+.stops-wrap { position: relative; margin-top: 30px; padding-bottom: 46px; }
+.stops {
+  position: relative;
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 44px 56px;
+}
+.road { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.road path { fill: none; vector-effect: non-scaling-stroke; }
+.road .bed { stroke: var(--road); stroke-width: 34; stroke-linecap: round; }
+.road .dash { stroke: var(--surface); stroke-width: 4; stroke-dasharray: 2 14; stroke-linecap: round; opacity: .9; }
+.stop { position: relative; min-width: 0; }
+.stop:nth-of-type(2n) { transform: translateY(46px); }
+.card {
+  position: relative; display: grid; grid-template-rows: auto 1fr;
+  height: 100%;
+  background: var(--surface); color: var(--text);
+  border: var(--bw) solid var(--line); border-radius: 24px;
+  box-shadow: var(--sh) calc(var(--sh) + 1px) 0 var(--shadow);
+  text-decoration: none;
+  overflow: hidden;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.card:hover { transform: translateY(-5px) rotate(-0.6deg); box-shadow: calc(var(--sh) + 3px) calc(var(--sh) + 6px) 0 var(--shadow); }
+.cover { display: block; aspect-ratio: 16 / 9; border-bottom: var(--bw) solid var(--line); background: var(--surface-2); max-width: 100%; }
+.cover img { width: 100%; height: 100%; object-fit: cover; }
+.badge {
+  position: absolute; top: 12px; left: 12px; z-index: 1;
+  display: grid; place-items: center;
+  width: 46px; height: 46px; border-radius: 50%;
+  background: var(--accent); color: var(--on-accent);
+  border: var(--bw) solid var(--line);
+  box-shadow: 2px 3px 0 var(--shadow);
+  font-family: var(--font-display); font-size: 1.5rem; line-height: 1;
+}
+.card-body { display: flex; flex-direction: column; gap: 8px; padding: 18px 22px 22px; min-width: 0; }
+.card-body .chip { align-self: flex-start; }
+.card-title { font-family: var(--font-display); font-size: 1.85rem; line-height: 1.2; }
+.card-teaser { color: var(--text-soft); line-height: 1.75; }
+.card-meta { margin-top: auto; padding-top: 6px; font-size: var(--fs-small); font-weight: 700; color: var(--text-soft); }
+
+/* ---------------------------------------------------------------- 怎么看 */
+.howto { background: var(--grass); padding-block: 16px 72px; }
+.steps { list-style: none; counter-reset: step; margin: 26px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.steps li {
+  counter-increment: step;
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 20px 22px;
+  background: var(--surface); border: var(--bw) solid var(--line); border-radius: 18px;
+}
+.steps li::before {
+  content: counter(step);
+  display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%;
+  background: var(--sun); color: var(--on-accent); border: 2.5px solid var(--line);
+  font-family: var(--font-display); font-size: 1.2rem; line-height: 1;
+}
+.steps b { font-size: 1.15rem; }
+.steps span { color: var(--text-soft); font-size: 0.98rem; }
+
+/* ---------------------------------------------------------------- 阅读页 */
+.reader-head { padding-block: 26px 10px; }
+.reader-head .wrap { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 32px; align-items: center; }
+.back { display: inline-block; font-weight: 700; text-decoration: none; color: var(--text-soft); margin-bottom: 14px; }
+.back:hover { color: var(--text); }
+.story-title { font-family: var(--font-display); font-weight: 400; font-size: var(--fs-h1); margin-top: 8px; }
+.story-title .chip { font-family: var(--font-body); vertical-align: middle; margin-left: 10px; font-size: 1rem; }
+.story-teaser { margin-top: 12px; color: var(--text-soft); max-width: 34em; font-size: 1.08rem; }
+.story-cover {
+  border: var(--bw) solid var(--line); border-radius: 22px; overflow: hidden;
+  box-shadow: var(--sh) calc(var(--sh) + 1px) 0 var(--shadow);
+  aspect-ratio: 16 / 9; background: var(--surface-2); max-width: 100%;
+  transform: rotate(1.2deg);
+}
+.story-cover img { width: 100%; height: 100%; object-fit: cover; }
+
+.seg-nav {
+  position: sticky; top: calc(env(safe-area-inset-top, 0px) + 62px); z-index: 10;
+  margin-top: 18px;
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  backdrop-filter: blur(8px);
+}
+.seg-nav .wrap { display: flex; gap: 8px; overflow-x: auto; padding-block: 10px; scrollbar-width: none; }
+.seg-nav .wrap::-webkit-scrollbar { display: none; }
+.seg-nav a {
+  flex: none; display: inline-flex; align-items: center; gap: 8px;
+  padding: 0.3em 0.95em 0.3em 0.35em;
+  border: 2.5px solid var(--line); border-radius: 999px;
+  background: var(--surface); text-decoration: none; font-weight: 700; font-size: 0.95rem;
+  transition: background .2s ease;
+}
+.seg-nav a b {
+  display: grid; place-items: center; width: 1.7em; height: 1.7em; border-radius: 50%;
+  background: var(--surface-2); border: 2px solid var(--line); font-size: 0.85rem;
+}
+.seg-nav a[aria-current="true"] { background: var(--accent); color: var(--on-accent); }
+.seg-nav a[aria-current="true"] b { background: var(--surface); color: var(--text); }
+
+.page { scroll-margin-top: 130px; padding-block: 34px; }
+.page + .page { border-top: 3px dashed color-mix(in srgb, var(--line) 18%, transparent); }
+.page .wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr); gap: 36px; align-items: start; }
+.page-text {
+  background: var(--surface);
+  border: var(--bw) solid var(--line); border-radius: 22px;
+  padding: 26px 30px 30px;
+  box-shadow: var(--sh) calc(var(--sh) + 1px) 0 var(--shadow);
+}
+.seg-no { font-weight: 900; color: var(--text-soft); letter-spacing: 0.1em; font-size: 0.9rem; }
+.page-text h2 { font-family: var(--font-display); font-weight: 400; font-size: var(--fs-h3); margin: 4px 0 14px; }
+.page-text p + p { margin-top: 0.85em; }
+.page-text p { max-width: 34em; }
+.say { font-weight: 700; color: color-mix(in srgb, var(--accent) 55%, var(--text)); }
+
+.page-media { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+.tv { margin: 0; position: relative; }
+.tv::before, .tv::after {
+  content: ""; position: absolute; top: -26px; width: 4px; height: 34px; background: var(--line); border-radius: 4px;
+}
+.tv::before { left: 42%; transform: rotate(-28deg); transform-origin: bottom; }
+.tv::after { left: 57%; transform: rotate(28deg); transform-origin: bottom; }
+.screen {
+  position: relative;
+  padding: 12px;
+  background: var(--accent);
+  border: var(--bw) solid var(--line); border-radius: 26px;
+  box-shadow: var(--sh) calc(var(--sh) + 1px) 0 var(--shadow);
+}
+.screen video {
+  width: 100%; aspect-ratio: 16 / 9; max-width: 100%;
+  background: var(--screen);
+  border: var(--bw) solid var(--line); border-radius: 14px;
+  object-fit: cover;
+}
+.play {
+  position: absolute; inset: 12px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+  border: 0; border-radius: 14px; cursor: pointer;
+  background: color-mix(in srgb, var(--screen) 22%, transparent);
+  color: #FFFFFF; font: inherit;
+}
+.play .tri {
+  display: grid; place-items: center;
+  width: 78px; height: 78px; border-radius: 50%;
+  background: var(--sun); border: var(--bw) solid #1E2746;
+  box-shadow: 0 5px 0 #1E2746;
+  transition: transform .15s ease;
+}
+.play .tri::before {
+  content: ""; margin-left: 7px;
+  border-left: 26px solid #1E2746; border-top: 16px solid transparent; border-bottom: 16px solid transparent;
+}
+.play:hover .tri { transform: scale(1.08); }
+.play-label {
+  padding: 0.2em 0.9em; border-radius: 999px; background: rgba(30, 39, 70, 0.82);
+  font-weight: 700; font-size: 0.95rem;
+}
+.ended {
+  position: absolute; inset: 12px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 14px;
+  background: rgba(20, 26, 58, 0.62);
+}
+.ended .btn { box-shadow: 0 4px 0 #1E2746; border-color: #1E2746; }
+.ended .btn:not(.btn-primary) { background: #FFFFFF; color: #1E2746; }
+.tv figcaption { margin-top: 10px; font-size: var(--fs-small); font-weight: 700; color: var(--text-soft); text-align: center; }
+
+.note {
+  position: relative;
+  padding: 22px 24px 20px;
+  background: color-mix(in srgb, var(--accent) 16%, var(--surface));
+  border: var(--bw) solid var(--line); border-radius: 18px;
+  transform: rotate(-0.8deg);
+}
+.note::before {
+  content: ""; position: absolute; top: -13px; left: 50%; width: 92px; height: 24px; margin-left: -46px;
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+  border: 2px solid color-mix(in srgb, var(--line) 25%, transparent);
+  transform: rotate(-3deg);
+}
+.note-label { font-size: 0.85rem; font-weight: 900; letter-spacing: 0.14em; color: var(--text-soft); }
+.note-term { font-family: var(--font-display); font-size: 1.6rem; line-height: 1.3; margin-top: 2px; }
+.note-short { font-weight: 900; margin-top: 2px; }
+.note-def { margin-top: 8px; color: var(--text-soft); font-size: 0.98rem; line-height: 1.75; }
+.note details { margin-top: 12px; font-size: 0.95rem; }
+.note summary { cursor: pointer; font-weight: 700; color: var(--text-soft); }
+.note details p { margin-top: 8px; line-height: 1.85; }
+
+.recap { padding-block: 28px 72px; }
+.recap-box {
+  background: var(--surface);
+  border: var(--bw) solid var(--line); border-radius: 26px;
+  padding: 30px clamp(20px, 4vw, 40px) 34px;
+  box-shadow: var(--sh) calc(var(--sh) + 1px) 0 var(--shadow);
+}
+.recap-box h2 { font-family: var(--font-display); font-weight: 400; font-size: var(--fs-h2); }
+.recap-list { list-style: none; counter-reset: r; margin: 20px 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 28px; }
+.recap-list li { counter-increment: r; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 14px; align-items: baseline; }
+.recap-list li::before {
+  content: counter(r); grid-row: span 2;
+  display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%;
+  background: var(--accent); color: var(--on-accent); border: 2.5px solid var(--line);
+  font-family: var(--font-display); font-size: 1.1rem; line-height: 1;
+}
+.recap-list b { font-size: 1.12rem; }
+.recap-list span { color: var(--text-soft); }
+.recap-actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 28px; }
+
+/* ---------------------------------------------------------------- 页脚 */
+.foot { background: var(--grass-2); padding-block: 30px 40px; font-size: 0.95rem; }
+.foot .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 30px; }
+.foot p { color: var(--text-soft); max-width: 40em; }
+.foot b { color: var(--text); font-family: var(--font-display); font-weight: 400; font-size: 1.2rem; }
+.reader-view .foot { background: var(--bg-2); }
+
+/* ---------------------------------------------------------------- 窄屏 */
+@media (max-width: 900px) {
+  .hero .wrap { grid-template-columns: minmax(0, 1fr); padding-top: 26px; }
+  .hero-copy { padding-bottom: 0; }
+  .hero-art { max-width: 480px; justify-self: center; width: 100%; padding-top: 70px; }
+  .hero-bubble { top: 0; right: 3%; }
+  .stops-wrap { padding-bottom: 0; }
+  .stops { grid-template-columns: minmax(0, 1fr); gap: 28px; padding-left: 22px; }
+  .stops::before { content: ""; position: absolute; left: 0; top: 10px; bottom: 10px; width: 14px; border-radius: 7px; background: var(--road); }
+  .road { display: none; }
+  .stop:nth-of-type(2n) { transform: none; }
+  .steps { grid-template-columns: minmax(0, 1fr); }
+  .reader-head .wrap { grid-template-columns: minmax(0, 1fr); }
+  .story-cover { display: none; }
+  .page .wrap { grid-template-columns: minmax(0, 1fr); gap: 30px; }
+  .page-text { padding: 22px 20px 24px; }
+  .recap-list { grid-template-columns: minmax(0, 1fr); }
+  .seg-nav { top: calc(env(safe-area-inset-top, 0px) + 58px); }
+}
+@media (max-width: 520px) {
+  .topnav a.hide-s { display: none; }
+  .card-title { font-size: 1.6rem; }
+  .hero-bubble { font-size: 0.88rem; max-width: 14em; }
+  .play .tri { width: 62px; height: 62px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .float, .wave-arm, .cloud, .blink, .glow { animation: none; }
+  .card, .btn { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="AI奇遇记 首页">
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <line x1="32" y1="12" x2="32" y2="4" stroke="#1E2746" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="32" cy="5" r="4.5" fill="#FF6F5E" stroke="#1E2746" stroke-width="2.5"/>
+        <ellipse cx="7" cy="34" rx="5" ry="9" fill="#FFC83D" stroke="#1E2746" stroke-width="2.5"/>
+        <ellipse cx="57" cy="34" rx="5" ry="9" fill="#FFC83D" stroke="#1E2746" stroke-width="2.5"/>
+        <rect x="8" y="12" width="48" height="44" rx="16" fill="#F6F8FF" stroke="#1E2746" stroke-width="3"/>
+        <rect x="14" y="19" width="36" height="28" rx="10" fill="#26335F"/>
+        <path d="M21 35 a5 5 0 0 1 10 0 M33 35 a5 5 0 0 1 10 0" stroke="#72F1FF" stroke-width="3" fill="none" stroke-linecap="round"/>
+      </svg>
+      <span>AI奇遇记</span>
+    </a>
+    <nav class="topnav" aria-label="主菜单">
+      <a href="#map">故事地图</a>
+      <a class="hide-s" href="#howto">怎么看</a>
+      <a href="#s1">开始读</a>
+    </nav>
+  </div>
+</header>
+
+<main id="home">
+  <section class="hero" id="top">
+    <div class="wrap">
+      <div class="hero-copy">
+        <p class="eyebrow">用故事读懂人工智能</p>
+        <h1 class="hero-title">AI奇遇记</h1>
+        <p class="lede">小机器人比特刚来到朵朵家，什么都不懂。跟着它认猫、点亮脑袋里的小灯泡、玩接字游戏，拆开 token、向量、注意力这些名词，再看看 AI 怎么看图、画画、帮人办事。</p>
+        <div class="cta">
+          <a class="btn btn-primary" href="#s1">从第一个故事开始</a>
+          <a class="btn" href="#map">看故事地图</a>
+        </div>
+        <p class="facts" id="facts"><span>8 个故事</span><span>32 段动画讲解</span><span>每段约半分钟</span></p>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <svg viewBox="0 0 560 430">
+          <g class="cloud"><path d="M70 92c-4-24 30-34 42-16 8-22 46-18 46 8 20-2 26 26 6 30H78c-22 0-26-20-8-22z" fill="var(--cloud)" stroke="#1E2746" stroke-width="3" stroke-linejoin="round" opacity=".95"/></g>
+          <g class="cloud slow"><path d="M388 58c-3-18 22-26 32-12 6-16 34-13 34 6 15-1 19 19 4 22h-62c-16 0-19-14-8-16z" fill="var(--cloud)" stroke="#1E2746" stroke-width="3" stroke-linejoin="round" opacity=".95"/></g>
+          <!-- 朵朵 -->
+          <g transform="translate(36 98) scale(1.02)">
+            <ellipse cx="120" cy="314" rx="54" ry="9" fill="#1E2746" opacity=".16"/>
+            <line x1="105" y1="262" x2="105" y2="298" stroke="#1E2746" stroke-width="20" stroke-linecap="round"/>
+            <line x1="105" y1="262" x2="105" y2="298" stroke="#FFE0C9" stroke-width="13" stroke-linecap="round"/>
+            <line x1="135" y1="262" x2="135" y2="298" stroke="#1E2746" stroke-width="20" stroke-linecap="round"/>
+            <line x1="135" y1="262" x2="135" y2="298" stroke="#FFE0C9" stroke-width="13" stroke-linecap="round"/>
+            <ellipse cx="101" cy="304" rx="15" ry="9" fill="#FF6F5E" stroke="#1E2746" stroke-width="3.5"/>
+            <ellipse cx="139" cy="304" rx="15" ry="9" fill="#FF6F5E" stroke="#1E2746" stroke-width="3.5"/>
+            <line x1="95" y1="214" x2="78" y2="258" stroke="#1E2746" stroke-width="19" stroke-linecap="round"/>
+            <line x1="95" y1="214" x2="78" y2="258" stroke="#FFE0C9" stroke-width="12" stroke-linecap="round"/>
+            <g class="wave-arm"><line x1="145" y1="214" x2="186" y2="178" stroke="#1E2746" stroke-width="19" stroke-linecap="round"/><line x1="145" y1="214" x2="186" y2="178" stroke="#FFE0C9" stroke-width="12" stroke-linecap="round"/></g>
+            <path d="M93 196h54l25 78H68z" fill="#FFC83D" stroke="#1E2746" stroke-width="3.5" stroke-linejoin="round"/>
+            <path d="M103 196l17 18 17-18z" fill="#FFFFFF" stroke="#1E2746" stroke-width="3" stroke-linejoin="round"/>
+            <circle cx="60" cy="80" r="26" fill="#3B2B3A" stroke="#1E2746" stroke-width="3.5"/>
+            <circle cx="180" cy="80" r="26" fill="#3B2B3A" stroke="#1E2746" stroke-width="3.5"/>
+            <circle cx="120" cy="130" r="70" fill="#3B2B3A" stroke="#1E2746" stroke-width="3.5"/>
+            <path d="M76 98l16-12v24zM76 98l-14-11v22z" fill="#FF6F5E" stroke="#1E2746" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="M164 98l-16-12v24zM164 98l14-11v22z" fill="#FF6F5E" stroke="#1E2746" stroke-width="2.5" stroke-linejoin="round"/>
+            <circle cx="120" cy="136" r="62" fill="#FFE0C9" stroke="#1E2746" stroke-width="3.5"/>
+            <path d="M52 115 A69 69 0 0 1 188 115 Z" fill="#3B2B3A"/>
+            <ellipse cx="80" cy="113" rx="15" ry="9" fill="#3B2B3A"/>
+            <ellipse cx="107" cy="113" rx="15" ry="9" fill="#3B2B3A"/>
+            <ellipse cx="133" cy="113" rx="15" ry="9" fill="#3B2B3A"/>
+            <ellipse cx="160" cy="113" rx="15" ry="9" fill="#3B2B3A"/>
+            <g class="blink"><ellipse cx="96" cy="148" rx="6.5" ry="9" fill="#1E2746"/><ellipse cx="144" cy="148" rx="6.5" ry="9" fill="#1E2746"/></g>
+            <circle cx="98" cy="144.5" r="2.6" fill="#FFFFFF"/><circle cx="146" cy="144.5" r="2.6" fill="#FFFFFF"/>
+            <ellipse cx="82" cy="166" rx="11" ry="6" fill="#FFB2B5"/><ellipse cx="158" cy="166" rx="11" ry="6" fill="#FFB2B5"/>
+            <path d="M110 167 q10 9 20 0" stroke="#1E2746" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+          </g>
+          <!-- 比特 -->
+          <g transform="translate(262 10) scale(1.06)">
+            <ellipse cx="150" cy="378" rx="64" ry="11" fill="#1E2746" opacity=".16"/>
+            <g class="float">
+              <line x1="100" y1="286" x2="70" y2="326" stroke="#1E2746" stroke-width="22" stroke-linecap="round"/>
+              <line x1="100" y1="286" x2="70" y2="326" stroke="#7CC4FF" stroke-width="15" stroke-linecap="round"/>
+              <circle cx="70" cy="326" r="12.5" fill="#F6F8FF" stroke="#1E2746" stroke-width="3.5"/>
+              <g class="wave-arm"><line x1="200" y1="286" x2="244" y2="246" stroke="#1E2746" stroke-width="22" stroke-linecap="round"/><line x1="200" y1="286" x2="244" y2="246" stroke="#7CC4FF" stroke-width="15" stroke-linecap="round"/><circle cx="244" cy="246" r="12.5" fill="#F6F8FF" stroke="#1E2746" stroke-width="3.5"/></g>
+              <rect x="92" y="258" width="116" height="96" rx="38" fill="#7CC4FF" stroke="#1E2746" stroke-width="4"/>
+              <rect x="110" y="268" width="26" height="10" rx="5" fill="#BBDFFF"/>
+              <circle class="glow" cx="150" cy="306" r="14" fill="#FFC83D" stroke="#1E2746" stroke-width="3.5"/>
+              <rect x="128" y="246" width="44" height="18" rx="7" fill="#C9D3EE" stroke="#1E2746" stroke-width="3.5"/>
+              <ellipse cx="58" cy="190" rx="15" ry="28" fill="#FFC83D" stroke="#1E2746" stroke-width="3.5"/>
+              <ellipse cx="242" cy="190" rx="15" ry="28" fill="#FFC83D" stroke="#1E2746" stroke-width="3.5"/>
+              <line x1="150" y1="126" x2="150" y2="100" stroke="#1E2746" stroke-width="4.5" stroke-linecap="round"/>
+              <circle cx="150" cy="96" r="11" fill="#FF6F5E" stroke="#1E2746" stroke-width="3.5"/>
+              <rect x="62" y="126" width="176" height="128" rx="48" fill="#F6F8FF" stroke="#1E2746" stroke-width="4"/>
+              <rect x="80" y="146" width="140" height="90" rx="32" fill="#26335F"/>
+              <rect x="98" y="154" width="34" height="7" rx="3.5" fill="#46517A"/>
+              <path d="M106 197 a13 13 0 0 1 26 0 M168 197 a13 13 0 0 1 26 0" stroke="#72F1FF" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+              <ellipse cx="96" cy="210" rx="10" ry="5.5" fill="#9A6A9C"/><ellipse cx="204" cy="210" rx="10" ry="5.5" fill="#9A6A9C"/>
+              <path d="M140 213 q10 9 20 0" stroke="#72F1FF" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+            </g>
+          </g>
+        </svg>
+        <p class="hero-bubble">嗨，我是比特！我还有好多东西不懂，你愿意陪我一起学吗？</p>
+      </div>
+    </div>
+    <svg class="hills" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true">
+      <path class="h1" d="M0 50 C 240 0 420 10 640 40 S 1100 70 1440 20 V90 H0z"/>
+      <path class="h2" d="M0 70 C 300 30 560 40 820 62 S 1240 80 1440 52 V90 H0z"/>
+    </svg>
+  </section>
+
+  <section class="map" id="map" aria-labelledby="map-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="map-title">故事地图</h2>
+        <p>建议按顺序读：后面的故事会用到前面故事里学到的知识。</p>
+      </div>
+      <div id="groups"></div>
+    </div>
+  </section>
+
+  <section class="howto" id="howto" aria-labelledby="howto-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="howto-title">怎么看</h2>
+        <p>每个故事 4 段，读一段、看一段，几分钟就能弄懂一个 AI 概念。</p>
+      </div>
+      <ol class="steps">
+        <li><b>读故事</b><span>比特、朵朵和小猫芝麻会遇到一个小麻烦，故事里藏着这一段要讲的知识。</span></li>
+        <li><b>看动画讲解</b><span>每段旁边的小电视里有半分钟左右的动画，把故事背后的道理讲清楚。</span></li>
+        <li><b>记住知识卡</b><span>动画下面贴着一张知识卡，一句话记住一个概念，想细看再展开。</span></li>
+      </ol>
+    </div>
+  </section>
+</main>
+
+<main id="reader" hidden></main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p><b>AI奇遇记</b>　跟着小机器人比特，用故事读懂人工智能。</p>
+    <p>故事、动画和配音都在 AI 的帮助下制作：动画由程序一帧一帧画出来，配音用的是微软“晓晓”语音合成。</p>
+  </div>
+</footer>
+
+<script src="data/stories.js"></script>
+<script src="data/media.js"></script>
+<script>
+(function () {
+  document.documentElement.setAttribute("lang", "zh-CN");
+  var STORIES = window.STORIES || [];
+  var MEDIA = window.MEDIA || {};
+  var NUM = "一二三四五六七八九十";
+  function cn(n) {
+    if (n <= 10) return NUM[n - 1];
+    if (n < 20) return "十" + NUM[n - 11];
+    return NUM[Math.floor(n / 10) - 1] + "十" + (n % 10 ? NUM[n % 10 - 1] : "");
+  }
+  var home = document.getElementById("home");
+  var reader = document.getElementById("reader");
+  var current = -1;
+  var observer = null;
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function rich(s) { return esc(s).replace(/“([^”]*)”/g, '<span class="say">“$1”</span>'); }
+  function fmt(sec) {
+    if (!sec) return "";
+    var m = Math.floor(sec / 60), s = Math.round(sec % 60);
+    if (s === 60) { m += 1; s = 0; }
+    return m + ":" + (s < 10 ? "0" : "") + s;
+  }
+  function minutes(st) {
+    var tot = 0;
+    st.segments.forEach(function (g) { if (MEDIA[g.id]) tot += MEDIA[g.id].dur; });
+    return tot ? Math.max(1, Math.round(tot / 60)) : 2;
+  }
+
+  var ROAD = '<svg class="road" aria-hidden="true"></svg>';
+
+  function drawRoads() {
+    Array.prototype.forEach.call(document.querySelectorAll(".stops-wrap"), function (wrap) {
+      var svg = wrap.querySelector(".road");
+      var wr = wrap.getBoundingClientRect();
+      if (!svg || !wr.width) return;
+      var pts = Array.prototype.map.call(wrap.querySelectorAll(".card"), function (cd) {
+        var r = cd.getBoundingClientRect();
+        return [r.left - wr.left + r.width / 2, r.top - wr.top + r.height * 0.45];
+      });
+      if (pts.length < 2) { svg.innerHTML = ""; return; }
+      svg.setAttribute("viewBox", "0 0 " + Math.round(wr.width) + " " + Math.round(wr.height));
+      var d = "M" + pts[0][0].toFixed(1) + " " + pts[0][1].toFixed(1);
+      for (var i = 1; i < pts.length; i++) {
+        var a = pts[i - 1], b = pts[i], my = ((a[1] + b[1]) / 2).toFixed(1);
+        d += " C " + a[0].toFixed(1) + " " + my + ", " + b[0].toFixed(1) + " " + my + ", " + b[0].toFixed(1) + " " + b[1].toFixed(1);
+      }
+      svg.innerHTML = '<path class="bed" d="' + d + '"/><path class="dash" d="' + d + '"/>';
+    });
+  }
+
+  function renderMap() {
+    var groups = window.GROUPS && window.GROUPS.length ? window.GROUPS : [{ id: null, title: "", desc: "" }];
+    var segCount = 0;
+    STORIES.forEach(function (st) { segCount += st.segments.length; });
+    var facts = document.getElementById("facts");
+    if (facts) {
+      facts.innerHTML = '<span>' + STORIES.length + ' 个故事</span><span>' + segCount + ' 段动画讲解</span><span>每段约半分钟</span>';
+    }
+    document.getElementById("groups").innerHTML = groups.map(function (g) {
+      var list = STORIES.filter(function (st) { return !g.id || st.group === g.id; });
+      if (!list.length) return "";
+      return '<div class="group">' +
+        (g.title ? '<div class="group-head"><span class="signpost">' + esc(g.title) + '</span><p>' + esc(g.desc) + '</p></div>' : '') +
+        '<div class="stops-wrap">' + ROAD + '<ol class="stops">' + list.map(cardHTML).join("") + '</ol></div></div>';
+    }).join("");
+  }
+
+  function cardHTML(st) {
+    var i = STORIES.indexOf(st);
+    return '<li class="stop" style="--accent: var(--' + st.theme + ')">' +
+        '<a class="card" href="#' + st.id + '">' +
+        '<span class="badge" aria-hidden="true">' + (i + 1) + '</span>' +
+        '<span class="cover"><img src="posters/' + st.cover + '.jpg" alt="《' + esc(st.title) + '》动画画面" loading="lazy" width="1280" height="720"></span>' +
+        '<span class="card-body">' +
+        '<span class="chip">' + esc(st.concept) + '</span>' +
+        '<span class="card-title">' + esc(st.title) + '</span>' +
+        '<span class="card-teaser">' + esc(st.teaser) + '</span>' +
+        '<span class="card-meta">' + st.segments.length + ' 段故事 · ' + st.segments.length + ' 段动画讲解 · 约 ' + minutes(st) + ' 分钟</span>' +
+        '</span></a></li>';
+  }
+
+  function segHTML(st, g, j) {
+    var dur = MEDIA[g.id] ? fmt(MEDIA[g.id].dur) : "";
+    var next = st.segments[j + 1];
+    return '<article class="page" id="' + g.id + '"><div class="wrap">' +
+      '<div class="page-text">' +
+      '<p class="seg-no">第 ' + (j + 1) + ' 段</p>' +
+      '<h2>' + esc(g.title) + '</h2>' +
+      g.story.map(function (p) { return '<p>' + rich(p) + '</p>'; }).join("") +
+      '</div>' +
+      '<div class="page-media">' +
+      '<figure class="tv"><div class="screen">' +
+      '<video preload="none" playsinline controls poster="posters/' + g.id + '.jpg" aria-label="第 ' + (j + 1) + ' 段动画讲解：' + esc(g.title) + '">' +
+      '<source src="videos/' + g.id + '.mp4" type="video/mp4"></video>' +
+      '<button class="play" type="button" aria-label="播放第 ' + (j + 1) + ' 段动画讲解"><span class="tri"></span>' +
+      '<span class="play-label">播放讲解' + (dur ? " · " + dur : "") + '</span></button>' +
+      '<div class="ended" hidden><button class="btn again" type="button">再看一遍</button>' +
+      (next ? '<a class="btn btn-primary" href="#' + next.id + '">下一段：' + esc(next.title) + '</a>' : '<a class="btn btn-primary" href="#recap">看看这个故事讲了什么</a>') +
+      '</div></div>' +
+      '<figcaption>动画讲解 · ' + esc(g.term) + '</figcaption></figure>' +
+      '<aside class="note" aria-label="知识点">' +
+      '<p class="note-label">知识点</p>' +
+      '<p class="note-term">' + esc(g.term) + '</p>' +
+      '<p class="note-short">' + esc(g.short) + '</p>' +
+      '<p class="note-def">' + esc(g.def) + '</p>' +
+      '<details><summary>讲解文字稿</summary><p>' + g.narration.map(esc).join("") + '</p></details>' +
+      '</aside></div></div></article>';
+  }
+
+  function renderStory(idx) {
+    var st = STORIES[idx];
+    var next = STORIES[idx + 1];
+    reader.style.setProperty("--accent", "var(--" + st.theme + ")");
+    reader.innerHTML =
+      '<section class="reader-head"><div class="wrap"><div>' +
+      '<a class="back" href="#map">← 回到故事地图</a>' +
+      '<p class="eyebrow">故事' + cn(idx + 1) + ' · ' + st.segments.length + ' 段 · 约 ' + minutes(st) + ' 分钟</p>' +
+      '<h1 class="story-title">' + esc(st.title) + '<span class="chip">' + esc(st.concept) + '</span></h1>' +
+      '<p class="story-teaser">' + esc(st.teaser) + '</p></div>' +
+      '<div class="story-cover"><img src="posters/' + st.cover + '.jpg" alt="" width="1280" height="720"></div>' +
+      '</div></section>' +
+      '<nav class="seg-nav" aria-label="这个故事的段落"><div class="wrap">' +
+      st.segments.map(function (g, j) {
+        return '<a href="#' + g.id + '" data-seg="' + g.id + '"><b>' + (j + 1) + '</b>' + esc(g.title) + '</a>';
+      }).join("") +
+      '</div></nav>' +
+      st.segments.map(function (g, j) { return segHTML(st, g, j); }).join("") +
+      '<section class="recap" id="recap"><div class="wrap"><div class="recap-box">' +
+      '<h2>这个故事讲了什么</h2>' +
+      '<ol class="recap-list">' + st.segments.map(function (g) {
+        return '<li><b>' + esc(g.term) + '</b><span>' + esc(g.short) + '</span></li>';
+      }).join("") + '</ol>' +
+      '<div class="recap-actions">' +
+      (next ? '<a class="btn btn-primary" href="#' + next.id + '">下一个故事：' + esc(next.title) + '</a>' : '<a class="btn btn-primary" href="#map">全部故事都读完啦，回到地图</a>') +
+      '<a class="btn" href="#' + st.segments[0].id + '">从头再看</a>' +
+      '</div></div></div></section>';
+    wire();
+  }
+
+  function wire() {
+    var screens = reader.querySelectorAll(".screen");
+    Array.prototype.forEach.call(screens, function (scr) {
+      var v = scr.querySelector("video");
+      var play = scr.querySelector(".play");
+      var end = scr.querySelector(".ended");
+      var src = v.querySelector("source");
+      play.addEventListener("click", function () {
+        var p = v.play();
+        if (p && p.catch) p.catch(function () {});
+      });
+      v.addEventListener("play", function () {
+        play.hidden = true;
+        end.hidden = true;
+        Array.prototype.forEach.call(reader.querySelectorAll("video"), function (o) { if (o !== v) o.pause(); });
+      });
+      v.addEventListener("ended", function () { end.hidden = false; });
+      end.querySelector(".again").addEventListener("click", function () {
+        v.currentTime = 0;
+        v.play();
+      });
+      src.addEventListener("error", function () {
+        play.querySelector(".play-label").textContent = "这段视频还没有生成";
+      });
+    });
+    if (observer) observer.disconnect();
+    if ("IntersectionObserver" in window) {
+      var links = reader.querySelectorAll(".seg-nav a");
+      observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (!en.isIntersecting) return;
+          Array.prototype.forEach.call(links, function (a) {
+            var on = a.getAttribute("data-seg") === en.target.id;
+            a.setAttribute("aria-current", on ? "true" : "false");
+            if (on && a.parentNode.scrollWidth > a.parentNode.clientWidth) {
+              a.parentNode.scrollTo({ left: Math.max(0, a.offsetLeft - 16), behavior: "smooth" });
+            }
+          });
+        });
+      }, { rootMargin: "-40% 0px -55% 0px" });
+      Array.prototype.forEach.call(reader.querySelectorAll(".page"), function (p) { observer.observe(p); });
+    }
+  }
+
+  function stopVideos() {
+    Array.prototype.forEach.call(reader.querySelectorAll("video"), function (v) { v.pause(); });
+  }
+
+  function route() {
+    var h = (location.hash || "").slice(1);
+    var m = /^s(\d+)(?:-(\d+))?$/.exec(h);
+    if (m) {
+      var idx = -1;
+      for (var i = 0; i < STORIES.length; i++) if (STORIES[i].id === "s" + m[1]) idx = i;
+      if (idx >= 0) {
+        var fresh = current !== idx;
+        if (fresh) { stopVideos(); renderStory(idx); current = idx; }
+        home.hidden = true;
+        reader.hidden = false;
+        document.body.classList.add("reader-view");
+        document.title = STORIES[idx].title + " · AI奇遇记";
+        var target = m[2] ? document.getElementById(h) : null;
+        if (target) {
+          target.scrollIntoView({ behavior: fresh ? "auto" : "smooth" });
+        } else {
+          window.scrollTo(0, 0);
+        }
+        return;
+      }
+    }
+    if (h === "recap" && current >= 0) {
+      var r = document.getElementById("recap");
+      if (r) { r.scrollIntoView({ behavior: "smooth" }); return; }
+    }
+    stopVideos();
+    reader.hidden = true;
+    reader.innerHTML = "";
+    current = -1;
+    home.hidden = false;
+    document.body.classList.remove("reader-view");
+    requestAnimationFrame(drawRoads);
+    document.title = "AI奇遇记";
+    var el = h ? document.getElementById(h) : null;
+    if (el) el.scrollIntoView(); else window.scrollTo(0, 0);
+  }
+
+  renderMap();
+  var roadTimer = null;
+  window.addEventListener("resize", function () { clearTimeout(roadTimer); roadTimer = setTimeout(drawRoads, 150); });
+  window.addEventListener("load", drawRoads);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawRoads);
+  window.addEventListener("hashchange", route);
+  route();
+})();
+</script>
+</body>
+</html>
